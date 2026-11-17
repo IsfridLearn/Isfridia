@@ -1,0 +1,46 @@
+{
+  "name": "isfridverse",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "next typegen && tsc --noEmit",
+    "check:supabase": "node --env-file-if-exists=.env.local scripts/check-supabase.mjs",
+    "db:push": "node --env-file-if-exists=.env.local scripts/db-push.mjs",
+    "test:rls": "node --env-file-if-exists=.env.local scripts/test-rls.mjs",
+    "test:auth": "node --env-file-if-exists=.env.local scripts/test-auth.mjs",
+    "test:admin": "node --env-file-if-exists=.env.local scripts/test-admin-import.mjs",
+    "test:comics": "node --env-file-if-exists=.env.local scripts/test-admin-comics.mjs",
+    "test:chapters": "node --env-file-if-exists=.env.local scripts/test-admin-chapters.mjs",
+    "test:reader": "node --env-file-if-exists=.env.local scripts/test-reader.mjs",
+    "test:library": "node --env-file-if-exists=.env.local scripts/test-library.mjs",
+    "test:unit": "node --test \"src/**/*.test.ts\"",
+    "demo:add": "node --env-file-if-exists=.env.local scripts/demo-data.mjs add",
+    "demo:remove": "node --env-file-if-exists=.env.local scripts/demo-data.mjs remove",
+    "db:types": "supabase gen types typescript --remote=hwkfkqzgryaplhatqxvf --schema public > src/lib/supabase/database.types.ts"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.119.0",
+    "next": "16.4.6",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "server-only": "^0.0.1",
+    "sharp": "0.35.5",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@tailwindcss/turbopack": "4.3.3",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.6",
+    "supabase": "^3.2.0",
+    "tailwindcss": "4.3.3",
+    "typescript": "^5"
+  }
+}

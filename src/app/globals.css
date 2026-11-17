@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+/*
+  IsfridVerse design tokens ("Midnight Ink" + glacier-blue accent).
+  These match the approved design canvas. Use them through Tailwind classes,
+  e.g. bg-canvas, bg-surface, text-muted, border-line, bg-accent text-on-accent.
+  Change a colour here and it changes everywhere.
+*/
+@theme {
+  /* Backgrounds, darkest to lightest */
+  --color-reader: #07080b; /* behind comic pages in the reader */
+  --color-canvas: #0b0c10; /* page background */
+  --color-sunken: #0e0f14; /* footer, inputs inside a surface */
+  --color-panel: #111318; /* table rows, inset panels */
+  --color-surface: #14161c; /* cards, inputs */
+  --color-surface-2: #1b1e26; /* hover, selected nav item */
+
+  /* Borders */
+  --color-line: #1f222b;
+  --color-line-strong: #262a35;
+
+  /* Text, strongest to faintest (all pass 4.5:1 on canvas) */
+  --color-fg: #edeef2;
+  --color-fg-soft: #c9cdd6;
+  --color-muted: #a0a6b4;
+  --color-faint: #858b9b;
+
+  /* Accent: glacier blue */
+  --color-accent: #6cc6ff; /* buttons, highlights */
+  --color-accent-fg: #9ad8ff; /* accent-coloured text, focus ring */
+  --color-on-accent: #04121f; /* text placed on an accent background */
+  --color-accent-soft: #0f2333; /* subtle accent badge background */
+
+  /* Comic status badges: text colour + background */
+  --color-ongoing: #7be3a4;
+  --color-ongoing-bg: #102a1b;
+  --color-completed: #c3b5ff;
+  --color-completed-bg: #221c3a;
+  --color-hiatus: #f2c14e;
+  --color-hiatus-bg: #2e2612;
+  --color-danger: #ff9ea1;
+  --color-danger-strong: #e5484d;
+}
+
+/* Fonts are loaded in layout.tsx with next/font and exposed as CSS variables. */
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-bricolage), var(--font-inter), ui-sans-serif, sans-serif;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--color-canvas);
+  color: var(--color-fg);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent-fg);
+  outline-offset: 2px;
+}
