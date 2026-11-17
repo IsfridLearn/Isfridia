@@ -15,6 +15,7 @@
 
 import { createClient } from "@supabase/supabase-js";
 import { slugify } from "../src/lib/admin/comic-form.ts";
+import { mangadex } from "../src/lib/mangadex/api.ts";
 import { ALLOWED_RATINGS, mapManga, officialChapters } from "../src/lib/mangadex/map.ts";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
@@ -36,38 +37,9 @@ const OFFSET = Math.max(0, Number(args.offset ?? 0));
 const ORDER = args.order === "latest" ? "latestUploadedChapter" : "followedCount";
 const WITH_CHAPTERS = args["no-chapters"] !== "true";
 
-// ---- MangaDex API client (polite) ---------------------------------------------
+// ---- MangaDex API client (polite; shared with the statistics collector) --------
 
-const API = "https://api.mangadex.org";
-const MIN_GAP_MS = 260;
-let last = 0;
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-async function md(path, params = []) {
-  for (let attempt = 1; attempt <= 5; attempt++) {
-    const wait = last + MIN_GAP_MS - Date.now();
-    if (wait > 0) await sleep(wait);
-    last = Date.now();
-    let res;
-    try {
-      res = await fetch(`${API}${path}?${new URLSearchParams(params)}`, {
-        headers: { "User-Agent": "Isfridia/1.0 (catalog sync)" },
-        signal: AbortSignal.timeout(20_000),
-      });
-    } catch {
-      await sleep(2000 * attempt);
-      continue;
-    }
-    if (res.status === 429 || res.status >= 500) {
-      const retryAfter = Number(res.headers.get("retry-after")) || Number(res.headers.get("x-ratelimit-retry-after")) - Date.now() / 1000;
-      await sleep(Math.min(60_000, Math.max(2000, (retryAfter > 0 ? retryAfter : 2 * attempt) * 1000)));
-      continue;
-    }
-    if (!res.ok) throw new Error(`MangaDex ${path} answered ${res.status}`);
-    return res.json();
-  }
-  throw new Error(`MangaDex ${path}: gave up after retries`);
-}
+const md = (path, params = []) => mangadex(path, params, "Isfridia/1.0 (catalog sync)");
 
 const RATINGS = [...ALLOWED_RATINGS].map((r) => ["contentRating[]", r]);
 

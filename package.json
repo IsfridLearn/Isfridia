@@ -19,6 +19,7 @@
     "test:library": "node --env-file-if-exists=.env.local scripts/test-library.mjs",
     "test:unit": "node --test \"src/**/*.test.ts\"",
     "mangadex:sync": "node --env-file-if-exists=.env.local scripts/mangadex-sync.mjs",
+    "mangadex:stats": "node --env-file-if-exists=.env.local scripts/mangadex-stats.mjs",
     "test:mangadex": "node --env-file-if-exists=.env.local scripts/test-mangadex.mjs",
     "demo:add": "node --env-file-if-exists=.env.local scripts/demo-data.mjs add",
     "demo:remove": "node --env-file-if-exists=.env.local scripts/demo-data.mjs remove",

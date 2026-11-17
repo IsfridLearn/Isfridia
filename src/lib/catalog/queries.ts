@@ -12,6 +12,7 @@ import { chapterNumber, isNew, timeAgo, type ComicStatus, type ComicType } from 
 import { imageUrl } from "@/lib/images/urls";
 import { createPublicClient } from "@/lib/supabase/public";
 import type { CatalogFilters } from "./filters";
+import { movementOf, toMode, type Movement, type TrendingMode } from "./trending";
 
 export const PAGE_SIZE = 24;
 
@@ -139,6 +140,57 @@ export async function getHomeData() {
     trending: { week: map(week.data), month: map(month.data).slice(0, 8), all: map(all.data) } satisfies RankedLists,
     popular: map(month.data),
   };
+}
+
+// ---------------------------------------------------------------------------
+// Trending This Week (homepage section)
+// ---------------------------------------------------------------------------
+// Weekly MangaDex follower GROWTH from daily snapshots (see trending.ts and the
+// trending_this_week() database function). Cached for hours: the snapshots
+// change once a day, and the daily cron job clears the "trending" tag.
+
+export type TrendingEntry = ComicCard & { rank: number; follows: number; gain: number | null; movement: Movement };
+export type TrendingWeek = { mode: TrendingMode; windowStart: string | null; windowEnd: string | null; items: TrendingEntry[] };
+
+export async function getTrendingThisWeek(limit = 10): Promise<TrendingWeek> {
+  "use cache";
+  cacheLife("hours");
+  cacheTag("catalog", "trending");
+
+  const db = createPublicClient();
+  const { data: ranks, error } = await db.rpc("trending_this_week", { p_limit: limit });
+  if (error) fail("trending", error.message);
+  const rows = ranks ?? [];
+  const first = rows[0];
+  const mode = toMode(first?.mode);
+  if (!rows.length) return { mode, windowStart: null, windowEnd: null, items: [] };
+
+  const { data: cards, error: cardError } = await db
+    .from("comic_cards")
+    .select(CARD_COLUMNS)
+    .in(
+      "id",
+      rows.map((r) => r.comic_id),
+    );
+  if (cardError) fail("trending comics", cardError.message);
+
+  const now = Date.now();
+  const byId = new Map((cards ?? []).map((c) => [c.id, c]));
+  const items: TrendingEntry[] = [];
+  const seen = new Set<string>();
+  for (const r of rows) {
+    const card = byId.get(r.comic_id);
+    if (!card || seen.has(r.comic_id)) continue; // hidden since ranking, or a duplicate
+    seen.add(r.comic_id);
+    items.push({
+      ...toCard(card, now),
+      rank: items.length + 1,
+      follows: r.follows ?? 0,
+      gain: r.gain ?? null,
+      movement: movementOf(r.rank, r.previous_rank ?? null, Boolean(r.has_previous)),
+    });
+  }
+  return { mode, windowStart: first?.window_start ?? null, windowEnd: first?.window_end ?? null, items };
 }
 
 // ---------------------------------------------------------------------------

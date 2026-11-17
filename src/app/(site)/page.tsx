@@ -5,6 +5,7 @@ import { ContinueReadingRow } from "@/components/comics/continue-reading-row";
 import { FeaturedCarousel } from "@/components/comics/featured-carousel";
 import { LatestUpdateCard } from "@/components/comics/latest-update-card";
 import { TrendingList } from "@/components/comics/trending-list";
+import { TrendingThisWeek, TrendingThisWeekSkeleton } from "@/components/comics/trending-week";
 import { EmptyState, SectionHeading } from "@/components/ui/section-heading";
 import { getGenres, getHomeData } from "@/lib/catalog/queries";
 
@@ -46,6 +47,11 @@ export default async function HomePage() {
           </ul>
         </section>
       ) : null}
+
+      {/* Weekly MangaDex follower growth; streams in with a skeleton, never blocks the page. */}
+      <Suspense fallback={<TrendingThisWeekSkeleton />}>
+        <TrendingThisWeek />
+      </Suspense>
 
       {hasComics ? (
         <>

@@ -329,3 +329,28 @@ Verified:
 ## Next: Phase 10: Deployment (needs GitHub + Vercel accounts)
 Run the sync on a schedule after deploying (e.g. GitHub Actions daily:
 `--order=latest --pages=2`, weekly `--verify`).
+
+## Trending This Week: BUILT (2026-11-18), deploy steps pending
+
+- [x] Migration `trending_snapshots`: `mangadex_stat_snapshots` (one row per
+      title per day: follows, rating; public read for visible comics, only the
+      secret key writes) + `trending_this_week()` (follower GROWTH over 7 days;
+      modes week / partial / starting; previous rank for arrows)
+- [x] Collector `src/lib/mangadex/stats.ts` (shared polite client
+      `src/lib/mangadex/api.ts`, also used by the sync); `npm run mangadex:stats`
+- [x] Daily Vercel Cron `vercel.json` → `/api/cron/mangadex-stats` (needs
+      `CRON_SECRET` in Vercel; fails closed without it), clears the "trending" tag
+- [x] Homepage section (top 10 manhwa, rank, ▲/▼/New, genres, +followers;
+      loading skeleton, empty and error states); existing UI unchanged
+- [x] Verified: first real snapshot 1,159/1,159; ranking, partial mode and
+      previous ranks checked against independent SQL in rolled-back transactions;
+      unit 42/42; lint, typecheck, build green
+- [ ] Not yet: look at it in a running site (`test:mangadex`-style check), add
+      `CRON_SECRET` to Vercel, confirm the first cron run
+
+## Next: Isfridia reader gap check (owner's request 2026-11-18)
+Reader already exists (Phase 8) for chapters uploaded by the owner. Compare it
+with the request: lazy loading, loading/broken-image states, chapter picker,
+image quality option, remember last-read chapter, and make external chapter
+rows open the in-site "official release" notice instead of linking straight
+out. MangaDex-hosted (scanlation) pages stay out.

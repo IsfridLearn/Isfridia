@@ -413,6 +413,42 @@ export type Database = {
         }
         Relationships: []
       }
+      mangadex_stat_snapshots: {
+        Row: {
+          comic_id: string
+          follows: number
+          rating: number | null
+          taken_on: string
+        }
+        Insert: {
+          comic_id: string
+          follows: number
+          rating?: number | null
+          taken_on: string
+        }
+        Update: {
+          comic_id?: string
+          follows?: number
+          rating?: number | null
+          taken_on?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mangadex_stat_snapshots_comic_id_fkey"
+            columns: ["comic_id"]
+            isOneToOne: false
+            referencedRelation: "comic_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mangadex_stat_snapshots_comic_id_fkey"
+            columns: ["comic_id"]
+            isOneToOne: false
+            referencedRelation: "comics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mangaupdates_cache: {
         Row: {
           cache_key: string
@@ -571,6 +607,20 @@ export type Database = {
       set_comic_genres: {
         Args: { p_comic_id: string; p_genre_ids: number[] }
         Returns: undefined
+      }
+      trending_this_week: {
+        Args: { p_limit?: number }
+        Returns: {
+          comic_id: string
+          follows: number
+          gain: number
+          has_previous: boolean
+          mode: string
+          previous_rank: number
+          rank: number
+          window_end: string
+          window_start: string
+        }[]
       }
     }
     Enums: {
