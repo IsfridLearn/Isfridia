@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /*
-  IsfridVerse design tokens ("Midnight Ink" + glacier-blue accent).
+  Isfridia design tokens ("Midnight Ink" + glacier-blue accent).
   These match the approved design canvas. Use them through Tailwind classes,
   e.g. bg-canvas, bg-surface, text-muted, border-line, bg-accent text-on-accent.
   Change a colour here and it changes everywhere.

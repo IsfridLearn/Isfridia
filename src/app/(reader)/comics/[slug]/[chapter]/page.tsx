@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const data = await load(params);
   if (!data) return { title: "Chapter not found" };
   const label = `Chapter ${data.chapter.number}${data.chapter.title ? `: ${data.chapter.title}` : ""}`;
-  return { title: `${label} · ${data.comic.title}`, description: `Read ${data.comic.title} ${label} on IsfridVerse.` };
+  return { title: `${label} · ${data.comic.title}`, description: `Read ${data.comic.title} ${label} on Isfridia.` };
 }
 
 export default function ReaderPage({ params }: Props) {

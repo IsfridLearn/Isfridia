@@ -1,4 +1,4 @@
-# IsfridVerse architecture
+# Isfridia architecture
 
 Approved in Phase 1 (2026-11-17). This is the reference for every later phase.
 Change it only when we agree on a change, and note the change in `PROGRESS.md`.

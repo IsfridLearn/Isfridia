@@ -97,9 +97,10 @@ export async function getHomeData() {
     cards().eq("is_featured", true).order("latest_chapter_at", { ascending: false, nullsFirst: false }).limit(5),
     cards().not("latest_chapter_at", "is", null).order("latest_chapter_at", { ascending: false }).limit(6),
     cards().order("created_at", { ascending: false }).limit(6),
-    cards().order("views_7d", { ascending: false }).order("latest_chapter_at", { ascending: false, nullsFirst: false }).limit(8),
-    cards().order("views_30d", { ascending: false }).order("latest_chapter_at", { ascending: false, nullsFirst: false }).limit(12),
-    cards().order("views_total", { ascending: false }).order("latest_chapter_at", { ascending: false, nullsFirst: false }).limit(8),
+    // Ranked by views on Isfrid, then by MangaDex follows (so the lists aren't empty on a new site).
+    cards().order("views_7d", { ascending: false }).order("external_popularity", { ascending: false }).limit(8),
+    cards().order("views_30d", { ascending: false }).order("external_popularity", { ascending: false }).limit(12),
+    cards().order("views_total", { ascending: false }).order("external_popularity", { ascending: false }).limit(8),
   ]);
   for (const [name, res] of Object.entries({ featured, latest, recent, week, month, all })) {
     if (res.error) fail(`homepage (${name})`, res.error.message);
@@ -161,7 +162,7 @@ export async function browseComics(filters: CatalogFilters): Promise<BrowseResul
 
   switch (filters.sort) {
     case "popular":
-      query = query.order("views_30d", { ascending: false });
+      query = query.order("views_30d", { ascending: false }).order("external_popularity", { ascending: false });
       break;
     case "new":
       query = query.order("created_at", { ascending: false });
@@ -203,7 +204,7 @@ export async function getRankedComics(period: RankPeriod, limit = 24): Promise<C
     .from("comic_cards")
     .select(CARD_COLUMNS)
     .order(column, { ascending: false })
-    .order("latest_chapter_at", { ascending: false, nullsFirst: false })
+    .order("external_popularity", { ascending: false })
     .limit(limit);
   if (error) fail("popular comics", error.message);
   const now = Date.now();
@@ -284,7 +285,9 @@ export async function getLatestChapters(page: number) {
 export type ChapterLink = { number: string; title: string | null };
 export type ReaderData = {
   comic: { id: string; slug: string; title: string };
-  chapter: { id: string; number: string; title: string | null };
+  // externalUrl: an official chapter hosted by its publisher (from MangaDex);
+  // the reader then links there instead of showing pages.
+  chapter: { id: string; number: string; title: string | null; externalUrl: string | null; groupName: string | null };
   pages: { url: string; width: number; height: number }[];
   chapters: ChapterLink[]; // all released chapters, newest first (for the picker)
   prev: ChapterLink | null;
@@ -305,7 +308,7 @@ export async function getReaderData(comicSlug: string, number: number): Promise<
 
   const { data: chapters, error: chErr } = await db
     .from("chapters")
-    .select("id, number, title")
+    .select("id, number, title, external_url, group_name")
     .eq("comic_id", comic.id)
     .order("number", { ascending: false });
   if (chErr) fail("chapters", chErr.message);
@@ -315,18 +318,22 @@ export async function getReaderData(comicSlug: string, number: number): Promise<
   if (index === -1) return null;
   const current = list[index];
 
-  const { data: pages, error: pgErr } = await db
-    .from("chapter_images")
-    .select("storage_key, width, height")
-    .eq("chapter_id", current.id)
-    .order("position");
+  const { data: pages, error: pgErr } = current.external_url
+    ? { data: [], error: null }
+    : await db.from("chapter_images").select("storage_key, width, height").eq("chapter_id", current.id).order("position");
   if (pgErr) fail("pages", pgErr.message);
 
   const link = (c: { number: number; title: string | null } | undefined): ChapterLink | null =>
     c ? { number: chapterNumber(c.number) ?? "", title: c.title } : null;
   return {
     comic: { id: comic.id, slug: comic.slug, title: comic.title },
-    chapter: { id: current.id, number: chapterNumber(current.number) ?? "", title: current.title },
+    chapter: {
+      id: current.id,
+      number: chapterNumber(current.number) ?? "",
+      title: current.title,
+      externalUrl: current.external_url,
+      groupName: current.group_name,
+    },
     pages: (pages ?? []).map((p) => ({ url: imageUrl(p.storage_key), width: p.width, height: p.height })),
     chapters: list.map((c) => ({ number: chapterNumber(c.number) ?? "", title: c.title })),
     // The list is newest first: "next" is the one before it in the list.
@@ -339,13 +346,25 @@ export async function getReaderData(comicSlug: string, number: number): Promise<
 // Comic details page
 // ---------------------------------------------------------------------------
 
+export type OfficialLink = { label: string; url: string };
+
 export type ComicDetail = ComicCard & {
   mangaupdatesUrl: string | null;
+  mangadexId: string | null;
+  officialLinks: OfficialLink[];
   altTitles: string[];
   author: string | null;
   artist: string | null;
   releaseYear: number | null;
-  chapters: { id: string; number: string; title: string | null; ago: string | null; isNew: boolean }[];
+  chapters: {
+    id: string;
+    number: string;
+    title: string | null;
+    ago: string | null;
+    isNew: boolean;
+    externalUrl: string | null;
+    groupName: string | null;
+  }[];
   similar: ComicCard[];
 };
 
@@ -357,7 +376,7 @@ export async function getComic(slug: string): Promise<ComicDetail | null> {
   const db = createPublicClient();
   const { data: row, error } = await db
     .from("comic_cards")
-    .select(`${CARD_COLUMNS}, alt_titles, author, artist, release_year, mangaupdates_url`)
+    .select(`${CARD_COLUMNS}, alt_titles, author, artist, release_year, mangaupdates_url, mangadex_id, official_links`)
     .eq("slug", slug)
     .maybeSingle();
   if (error) fail("comic", error.message);
@@ -367,7 +386,7 @@ export async function getComic(slug: string): Promise<ComicDetail | null> {
   const [chapters, similar] = await Promise.all([
     db
       .from("chapters")
-      .select("id, number, title, published_at")
+      .select("id, number, title, published_at, external_url, group_name")
       .eq("comic_id", row.id)
       .order("number", { ascending: false }),
     firstGenre
@@ -381,6 +400,10 @@ export async function getComic(slug: string): Promise<ComicDetail | null> {
   return {
     ...toCard(row, now),
     mangaupdatesUrl: row.mangaupdates_url,
+    mangadexId: row.mangadex_id,
+    officialLinks: Object.values((row.official_links ?? {}) as Record<string, OfficialLink>).filter(
+      (l) => typeof l?.url === "string" && l.url.startsWith("https://") && typeof l.label === "string",
+    ),
     altTitles: row.alt_titles ?? [],
     author: row.author,
     artist: row.artist,
@@ -391,6 +414,8 @@ export async function getComic(slug: string): Promise<ComicDetail | null> {
       title: ch.title,
       ago: timeAgo(ch.published_at, now),
       isNew: isNew(ch.published_at, now),
+      externalUrl: ch.external_url,
+      groupName: ch.group_name,
     })),
     similar: (similar.data ?? []).map((r) => toCard(r, now)),
   };

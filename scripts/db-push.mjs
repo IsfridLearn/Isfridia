@@ -1,4 +1,4 @@
-// Applies the SQL files in supabase/migrations to the IsfridVerse database.
+// Applies the SQL files in supabase/migrations to the Isfridia database.
 // Run with: npm run db:push            (apply)
 //           npm run db:push -- --dry-run (only list what would be applied)
 //
@@ -30,7 +30,7 @@ if (dbUrl) {
     dbUrl.match(/@db\.([a-z0-9]+)\.supabase\.co/)?.[1];
   if (dbRef !== apiRef) {
     console.error(`Refusing to run: the API URL is project "${apiRef}" but the database URL is project "${dbRef ?? "unknown"}".`);
-    console.error("Both must come from the IsfridVerse project.");
+    console.error("Both must come from the Isfridia project.");
     process.exit(1);
   }
   remote = dbUrl;

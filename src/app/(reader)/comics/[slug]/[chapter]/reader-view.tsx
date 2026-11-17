@@ -18,7 +18,7 @@ import { createClient } from "@/lib/supabase/client";
 
 const WIDTHS = { narrow: 600, standard: 760, wide: 1000 } as const;
 type Width = keyof typeof WIDTHS;
-const WIDTH_KEY = "isfridverse.reader-width";
+const WIDTH_KEY = "isfridia.reader-width";
 const SAVE_EVERY_MS = 5000;
 const VIEW_AFTER_MS = 5000;
 
@@ -89,8 +89,12 @@ export function ReaderView({ data }: { data: ReaderData }) {
     };
   }, [data.chapter.id]);
 
-  // Count a view after a few seconds of reading.
+  // Official chapters hosted by their publisher are read there, not here.
+  const external = data.chapter.externalUrl;
+
+  // Count a view after a few seconds of reading (only chapters read on Isfrid).
   useEffect(() => {
+    if (external) return;
     const timer = setTimeout(() => {
       const payload = JSON.stringify({ chapterId: data.chapter.id });
       if (!navigator.sendBeacon?.("/api/views", new Blob([payload], { type: "application/json" }))) {
@@ -98,10 +102,11 @@ export function ReaderView({ data }: { data: ReaderData }) {
       }
     }, VIEW_AFTER_MS);
     return () => clearTimeout(timer);
-  }, [data.chapter.id]);
+  }, [data.chapter.id, external]);
 
-  // Saved progress (logged-in readers only).
+  // Saved progress (logged-in readers only, chapters read on Isfrid).
   useEffect(() => {
+    if (external) return;
     let userId: string | null = null;
     let lastSaved = -1;
     let stopped = false;
@@ -143,7 +148,7 @@ export function ReaderView({ data }: { data: ReaderData }) {
       document.removeEventListener("visibilitychange", onHide);
       window.removeEventListener("pagehide", save);
     };
-  }, [supabase, data.chapter.id, data.comic.id, data.pages.length]);
+  }, [supabase, data.chapter.id, data.comic.id, data.pages.length, external]);
 
   const jumpBack = () => {
     if (resumeAt !== null) pageRefs.current[resumeAt]?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -225,7 +230,30 @@ export function ReaderView({ data }: { data: ReaderData }) {
       ) : null}
 
       <main aria-label={`${label} pages`} className="mx-auto w-full" style={{ maxWidth: WIDTHS[width] }}>
-        {data.pages.length ? (
+        {external ? (
+          <div className="mx-4 my-12 flex flex-col items-center gap-4 rounded-2xl border border-line bg-surface px-6 py-12 text-center">
+            <p className="text-sm font-semibold tracking-wider text-accent-fg uppercase">Official release</p>
+            <h2 className="font-display text-2xl font-extrabold tracking-tight">
+              {label} is published by {data.chapter.groupName ?? "its official publisher"}
+            </h2>
+            <p className="max-w-md text-muted">Read it on the publisher&apos;s own site. Reading it there supports the creators.</p>
+            <a
+              href={external}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-12 items-center rounded-xl bg-accent px-6 font-bold text-on-accent transition hover:brightness-110"
+            >
+              Read on {data.chapter.groupName ?? "the official site"} ↗
+            </a>
+            <p className="text-xs text-faint">
+              Chapter listing via{" "}
+              <a href="https://mangadex.org" target="_blank" rel="noopener noreferrer" className="underline hover:text-fg-soft">
+                MangaDex
+              </a>
+              .
+            </p>
+          </div>
+        ) : data.pages.length ? (
           data.pages.map((page, i) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img

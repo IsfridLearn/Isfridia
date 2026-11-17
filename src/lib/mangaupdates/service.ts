@@ -6,7 +6,7 @@ import "server-only";
 // table (admins only). It lives in the database rather than server memory so
 // it survives restarts and is shared by every server instance.
 //
-// Only fields IsfridVerse uses are stored. Cover images are deliberately NOT
+// Only fields Isfridia uses are stored. Cover images are deliberately NOT
 // imported: they belong to publishers and artists.
 
 import type { SupabaseClient } from "@supabase/supabase-js";

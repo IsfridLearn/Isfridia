@@ -141,7 +141,7 @@ async function SeriesPreview({ db, id, q }: { db: Db; id: number; q: string }) {
     { label: "Status", value: STATUS_LABEL[draft.status] },
     {
       label: "Type",
-      value: draft.type ? TYPE_LABEL[draft.type] : draft.typeSource ? `${draft.typeSource} (not a type IsfridVerse uses, so choose one)` : null,
+      value: draft.type ? TYPE_LABEL[draft.type] : draft.typeSource ? `${draft.typeSource} (not a type Isfridia uses, so choose one)` : null,
     },
     { label: "Release year", value: draft.releaseYear ? String(draft.releaseYear) : null },
     {

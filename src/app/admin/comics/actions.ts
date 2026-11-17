@@ -15,7 +15,7 @@ import { parseComicForm, readComicForm, type ComicField, type ComicFormValues } 
 import { adminForAction } from "@/lib/auth/require-admin";
 import { CoverError, MAX_COVER_BYTES, processCover } from "@/lib/images/cover";
 import { removeImages, uploadImage } from "@/lib/images/storage";
-import { coverFiles } from "@/lib/images/urls";
+import { coverFiles, isStoredCover } from "@/lib/images/urls";
 
 export type ComicFormState = {
   message?: string;
@@ -167,7 +167,7 @@ export async function deleteForever(_prev: DeleteState, formData: FormData): Pro
 
   const { data: deleted, error } = await supabase.from("comics").delete().eq("id", comicId).select("id");
   if (error || !deleted?.length) return { message: "Could not delete the comic. Please try again." };
-  if (comic.cover_key) await removeImages(supabase, coverFiles(comic.cover_key));
+  if (isStoredCover(comic.cover_key)) await removeImages(supabase, coverFiles(comic.cover_key));
 
   publishChange();
   return {};
@@ -223,7 +223,7 @@ export async function uploadCover(comicId: string, _prev: CoverState, formData: 
     await removeImages(supabase, [largePath, smallPath]);
     return result(false, "Could not save the cover. Please try again.");
   }
-  if (comic.cover_key) await removeImages(supabase, coverFiles(comic.cover_key));
+  if (isStoredCover(comic.cover_key)) await removeImages(supabase, coverFiles(comic.cover_key));
 
   publishChange();
   return result(true, "Cover updated.");
@@ -236,6 +236,6 @@ export async function removeCover(comicId: string): Promise<void> {
   const { data: comic } = await admin.supabase.from("comics").select("cover_key").eq("id", comicId).maybeSingle();
   if (!comic?.cover_key) return;
   const { error } = await admin.supabase.from("comics").update({ cover_key: null }).eq("id", comicId);
-  if (!error) await removeImages(admin.supabase, coverFiles(comic.cover_key));
+  if (!error && isStoredCover(comic.cover_key)) await removeImages(admin.supabase, coverFiles(comic.cover_key));
   publishChange();
 }

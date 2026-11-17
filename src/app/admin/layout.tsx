@@ -9,7 +9,7 @@ import { LogoMark, Wordmark } from "@/components/brand/logo";
 // The frame itself shows nothing private; every admin page checks
 // permissions with requireAdminPage() before loading any data.
 export const metadata: Metadata = {
-  title: { default: "Admin", template: "%s · Admin · IsfridVerse" },
+  title: { default: "Admin", template: "%s · Admin · Isfridia" },
   robots: { index: false, follow: false },
 };
 

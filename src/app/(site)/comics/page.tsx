@@ -6,7 +6,7 @@ import { PageTitle } from "@/components/ui/section-heading";
 
 export const metadata: Metadata = {
   title: "Browse comics",
-  description: "Browse every series on IsfridVerse by genre, status and type.",
+  description: "Browse every series on Isfridia by genre, status and type.",
 };
 
 export default function ComicsPage({ searchParams }: PageProps<"/comics">) {

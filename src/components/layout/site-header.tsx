@@ -9,7 +9,7 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-canvas/90 backdrop-blur-md">
       <div className="mx-auto flex max-w-[1280px] flex-wrap items-center gap-x-6 gap-y-1 px-4 py-2.5 sm:px-6">
-        <Link href="/" aria-label="IsfridVerse home" className="flex items-center gap-2.5">
+        <Link href="/" aria-label="Isfridia home" className="flex items-center gap-2.5">
           <LogoMark />
           <Wordmark className="text-[22px]" />
         </Link>

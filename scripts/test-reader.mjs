@@ -74,7 +74,7 @@ try {
   check("Chapter 1 shows its 2 pages, in order", imgs.length === 2 && ch1.indexOf("Page 1 of 2") < ch1.indexOf("Page 2 of 2"), `${imgs.length} images`);
   check("Each page reserves its space (width and height set)", imgs.every((t) => /width="800"/.test(t) && /height="(1200|900)"/.test(t)));
   check("The first page is fetched with high priority", /fetchPriority="high"/.test(imgs[0] ?? ""), imgs[0]);
-  check("Chapter page title names the chapter and comic", ch1.includes(`<title>Chapter 1: Opening · E2E Reader ${run} · IsfridVerse</title>`));
+  check("Chapter page title names the chapter and comic", ch1.includes(`<title>Chapter 1: Opening · E2E Reader ${run} · Isfridia</title>`));
   check("Chapter 1: Next goes to 1.5, and there is no Previous link", ch1.includes(`href="/comics/${slug}/chapter-1-5"`) && !ch1.includes(`href="/comics/${slug}/chapter-0"`));
 
   const ch15 = await html(`/comics/${slug}/chapter-1-5`);

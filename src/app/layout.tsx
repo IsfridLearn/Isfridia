@@ -16,10 +16,10 @@ const bricolage = Bricolage_Grotesque({
 
 export const metadata: Metadata = {
   title: {
-    default: "IsfridVerse",
-    template: "%s · IsfridVerse",
+    default: "Isfridia",
+    template: "%s · Isfridia",
   },
-  description: "Read original manhwa and webcomics on IsfridVerse.",
+  description: "Read original manhwa and webcomics on Isfridia.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

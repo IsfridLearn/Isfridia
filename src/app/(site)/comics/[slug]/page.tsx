@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: PageProps<"/comics/[slug]">):
   if (!comic) return { title: "Comic not found" };
   return {
     title: comic.title,
-    description: comic.synopsis.slice(0, 160) || `Read ${comic.title} on IsfridVerse.`,
+    description: comic.synopsis.slice(0, 160) || `Read ${comic.title} on Isfridia.`,
   };
 }
 
@@ -158,6 +158,40 @@ async function ComicDetails({ params }: { params: PageProps<"/comics/[slug]">["p
                 </a>
               </p>
             ) : null}
+            {comic.officialLinks.length ? (
+              <section aria-labelledby="official-heading">
+                <h2 id="official-heading" className="mb-2 font-display text-xl font-bold tracking-tight">
+                  Read or buy officially
+                </h2>
+                <ul className="flex flex-wrap gap-2">
+                  {comic.officialLinks.map((l) => (
+                    <li key={l.url}>
+                      <a
+                        href={l.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex h-10 items-center rounded-[10px] border border-line-strong bg-surface px-3.5 text-sm font-semibold transition hover:bg-surface-2"
+                      >
+                        {l.label} ↗
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+            {comic.mangadexId ? (
+              <p className="text-sm text-muted">
+                Title details and chapter listing via{" "}
+                <a
+                  href={`https://mangadex.org/title/${comic.mangadexId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-fg-soft underline hover:text-accent-fg"
+                >
+                  MangaDex ↗
+                </a>
+              </p>
+            ) : null}
 
             <section aria-labelledby="chapters-heading" className="mt-2">
               <h2 id="chapters-heading" className="mb-3 font-display text-xl font-bold tracking-tight">
@@ -165,19 +199,43 @@ async function ComicDetails({ params }: { params: PageProps<"/comics/[slug]">["p
               </h2>
               {comic.chapters.length ? (
                 <ul className="overflow-hidden rounded-[14px] border border-line">
-                  {comic.chapters.map((ch) => (
-                    <li key={ch.id} className="border-t border-line first:border-t-0">
-                      <Link href={chapterPath(comic.slug, ch.number)} className="flex items-center gap-3.5 bg-panel px-4 py-3.5 transition hover:bg-surface-2">
+                  {comic.chapters.map((ch) => {
+                    const row = (
+                      <>
                         <span className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-2.5 gap-y-1">
                           <span className="font-semibold">Chapter {ch.number}</span>
                           {ch.title ? <span className="truncate text-sm text-muted">{ch.title}</span> : null}
                         </span>
                         {ch.isNew ? <NewBadge /> : null}
+                        {ch.externalUrl ? (
+                          <span className="shrink-0 text-xs font-semibold text-accent-fg">↗ {ch.groupName ?? "Official site"}</span>
+                        ) : null}
                         <span className="shrink-0 text-[13px] text-muted">{ch.ago}</span>
-                      </Link>
-                    </li>
-                  ))}
+                      </>
+                    );
+                    const rowClass = "flex items-center gap-3.5 bg-panel px-4 py-3.5 transition hover:bg-surface-2";
+                    return (
+                      <li key={ch.id} className="border-t border-line first:border-t-0">
+                        {ch.externalUrl ? (
+                          // Official chapter hosted by its publisher: read it there.
+                          <a href={ch.externalUrl} target="_blank" rel="noopener noreferrer" className={rowClass} aria-label={`Chapter ${ch.number} on ${ch.groupName ?? "the official site"} (opens in a new tab)`}>
+                            {row}
+                          </a>
+                        ) : (
+                          <Link href={chapterPath(comic.slug, ch.number)} className={rowClass}>
+                            {row}
+                          </Link>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
+              ) : comic.mangadexId ? (
+                <EmptyState title="No official English chapters linked yet">
+                  {comic.officialLinks.length
+                    ? "See “Read or buy officially” above for where this series is published."
+                    : "This series is listed for discovery. Bookmark it to keep track."}
+                </EmptyState>
               ) : (
                 <EmptyState title="No chapters released yet" />
               )}

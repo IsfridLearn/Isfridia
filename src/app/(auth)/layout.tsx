@@ -6,7 +6,7 @@ import { LogoMark, Wordmark } from "@/components/brand/logo";
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <main className="flex flex-1 flex-col items-center px-4 py-12 sm:py-20">
-      <Link href="/" className="mb-8 flex items-center gap-2.5" aria-label="IsfridVerse home">
+      <Link href="/" className="mb-8 flex items-center gap-2.5" aria-label="Isfridia home">
         <LogoMark size={32} />
         <Wordmark className="text-2xl" />
       </Link>

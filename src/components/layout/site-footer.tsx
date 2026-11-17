@@ -39,12 +39,17 @@ export function SiteFooter() {
         </nav>
       </div>
       <div className="mx-auto flex max-w-[1280px] flex-wrap justify-between gap-2 border-t border-line px-4 py-5 text-[13px] text-faint sm:px-6">
-        <span>© 2026 IsfridVerse</span>
+        <span>© 2026 Isfridia</span>
         <span>
-          Some series details provided by{" "}
+          Catalog data and official chapter links via{" "}
+          <a href="https://mangadex.org" target="_blank" rel="noopener noreferrer" className="text-fg-soft underline hover:text-accent-fg">
+            MangaDex
+          </a>{" "}
+          and{" "}
           <a href="https://www.mangaupdates.com" target="_blank" rel="noopener noreferrer" className="text-fg-soft underline hover:text-accent-fg">
             MangaUpdates
           </a>
+          . Covers and titles belong to their creators and publishers.
         </span>
       </div>
     </footer>

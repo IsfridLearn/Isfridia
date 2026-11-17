@@ -7,7 +7,7 @@ import { getRankedComics, type RankPeriod } from "@/lib/catalog/queries";
 
 export const metadata: Metadata = {
   title: "Popular",
-  description: "The most-read series on IsfridVerse this week, this month and of all time.",
+  description: "The most-read series on Isfridia this week, this month and of all time.",
 };
 
 const PERIODS: { id: RankPeriod; label: string }[] = [
@@ -19,7 +19,7 @@ const PERIODS: { id: RankPeriod; label: string }[] = [
 export default function PopularPage({ searchParams }: PageProps<"/popular">) {
   return (
     <div className="mx-auto max-w-[1280px] px-4 pt-8 sm:px-6">
-      <PageTitle subtitle="Ranked by how many chapters readers opened.">Popular</PageTitle>
+      <PageTitle subtitle="Ranked by reads on Isfrid, then by MangaDex followers.">Popular</PageTitle>
       <Suspense fallback={<ComicGridSkeleton />}>
         <Ranking searchParams={searchParams} />
       </Suspense>

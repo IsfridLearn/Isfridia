@@ -1,4 +1,4 @@
-// Unit tests for the MangaUpdates -> IsfridVerse mapping. Run: npm run test:unit
+// Unit tests for the MangaUpdates -> Isfridia mapping. Run: npm run test:unit
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { mapStatus, mapType, matchGenres, toImportDraft, toPlainText, type MuSeries } from "./map.ts";
@@ -35,7 +35,7 @@ test("mapStatus", () => {
   assert.equal(mapStatus(null, null), "ongoing");
 });
 
-test("mapType keeps only types IsfridVerse supports", () => {
+test("mapType keeps only types Isfridia supports", () => {
   assert.equal(mapType("Manhwa"), "manhwa");
   assert.equal(mapType("Manga"), "manga");
   assert.equal(mapType("Novel"), null);

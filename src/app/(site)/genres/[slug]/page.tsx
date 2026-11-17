@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: PageProps<"/genres/[slug]">):
   const { slug } = await params;
   const genre = (await getGenres()).find((g) => g.slug === slug);
   return genre
-    ? { title: `${genre.name} comics`, description: `Every ${genre.name} series on IsfridVerse.` }
+    ? { title: `${genre.name} comics`, description: `Every ${genre.name} series on Isfridia.` }
     : { title: "Genre not found" };
 }
 

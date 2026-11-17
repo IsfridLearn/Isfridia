@@ -29,7 +29,7 @@ export async function GET() {
   return new Response(JSON.stringify(body, null, 2), {
     headers: {
       "Content-Type": "application/json; charset=utf-8",
-      "Content-Disposition": 'attachment; filename="isfridverse-my-data.json"',
+      "Content-Disposition": 'attachment; filename="isfridia-my-data.json"',
       "Cache-Control": "private, no-store",
     },
   });

@@ -257,18 +257,18 @@ otp_expiry = 3600
 # subject = "You have been invited"
 # content_path = "./supabase/templates/invite.html"
 
-# IsfridVerse: branded templates whose links go to /auth/confirm with a token
+# Isfridia: branded templates whose links go to /auth/confirm with a token
 # hash, so they work even when the email is opened on another device.
 # OFF for now: Supabase's free plan rejects custom templates unless a custom
 # SMTP email provider is configured. Uncomment both blocks once SMTP is set up
 # (planned before launch). Until then Supabase's default emails are used; their
 # links work when opened in the same browser that signed up.
 # [auth.email.template.confirmation]
-# subject = "Confirm your IsfridVerse account"
+# subject = "Confirm your Isfridia account"
 # content_path = "./supabase/templates/confirmation.html"
 #
 # [auth.email.template.recovery]
-# subject = "Reset your IsfridVerse password"
+# subject = "Reset your Isfridia password"
 # content_path = "./supabase/templates/recovery.html"
 
 # Uncomment to customize notification email template

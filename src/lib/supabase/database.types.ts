@@ -183,33 +183,45 @@ export type Database = {
           comic_id: string
           created_at: string
           deleted_at: string | null
+          external_url: string | null
+          group_name: string | null
           id: string
+          mangadex_id: string | null
           number: number
           published_at: string | null
           status: Database["public"]["Enums"]["chapter_status"]
           title: string | null
+          translated_language: string | null
           updated_at: string
         }
         Insert: {
           comic_id: string
           created_at?: string
           deleted_at?: string | null
+          external_url?: string | null
+          group_name?: string | null
           id?: string
+          mangadex_id?: string | null
           number: number
           published_at?: string | null
           status?: Database["public"]["Enums"]["chapter_status"]
           title?: string | null
+          translated_language?: string | null
           updated_at?: string
         }
         Update: {
           comic_id?: string
           created_at?: string
           deleted_at?: string | null
+          external_url?: string | null
+          group_name?: string | null
           id?: string
+          mangadex_id?: string | null
           number?: number
           published_at?: string | null
           status?: Database["public"]["Enums"]["chapter_status"]
           title?: string | null
+          translated_language?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -307,14 +319,19 @@ export type Database = {
           cover_key: string | null
           created_at: string
           deleted_at: string | null
+          external_popularity: number
+          external_synced_at: string | null
           id: string
           is_featured: boolean
           is_published: boolean
+          mangadex_id: string | null
           mangaupdates_id: number | null
           mangaupdates_url: string | null
+          official_links: Json
           release_year: number | null
           search_text: string
           slug: string
+          source: string
           status: Database["public"]["Enums"]["comic_status"]
           synopsis: string
           title: string
@@ -328,14 +345,19 @@ export type Database = {
           cover_key?: string | null
           created_at?: string
           deleted_at?: string | null
+          external_popularity?: number
+          external_synced_at?: string | null
           id?: string
           is_featured?: boolean
           is_published?: boolean
+          mangadex_id?: string | null
           mangaupdates_id?: number | null
           mangaupdates_url?: string | null
+          official_links?: Json
           release_year?: number | null
           search_text?: string
           slug: string
+          source?: string
           status?: Database["public"]["Enums"]["comic_status"]
           synopsis?: string
           title: string
@@ -349,14 +371,19 @@ export type Database = {
           cover_key?: string | null
           created_at?: string
           deleted_at?: string | null
+          external_popularity?: number
+          external_synced_at?: string | null
           id?: string
           is_featured?: boolean
           is_published?: boolean
+          mangadex_id?: string | null
           mangaupdates_id?: number | null
           mangaupdates_url?: string | null
+          official_links?: Json
           release_year?: number | null
           search_text?: string
           slug?: string
+          source?: string
           status?: Database["public"]["Enums"]["comic_status"]
           synopsis?: string
           title?: string
@@ -500,16 +527,20 @@ export type Database = {
           chapter_count: number | null
           cover_key: string | null
           created_at: string | null
+          external_popularity: number | null
           genre_names: string[] | null
           genre_slugs: string[] | null
           id: string | null
           is_featured: boolean | null
           latest_chapter_at: string | null
           latest_chapter_number: number | null
+          mangadex_id: string | null
           mangaupdates_url: string | null
+          official_links: Json | null
           release_year: number | null
           search_text: string | null
           slug: string | null
+          source: string | null
           status: Database["public"]["Enums"]["comic_status"] | null
           synopsis: string | null
           title: string | null

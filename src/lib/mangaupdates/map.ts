@@ -1,4 +1,4 @@
-// Turns MangaUpdates series data into IsfridVerse comic fields.
+// Turns MangaUpdates series data into Isfridia comic fields.
 //
 // Pure functions only (no network, no database), so they are unit-tested in
 // map.test.ts. Anything MangaUpdates doesn't have becomes empty and is listed

@@ -1,4 +1,4 @@
-# IsfridVerse design
+# Isfridia design
 
 Approved 2026-11-17, with more experimentation planned later.
 Design canvas (private to the owner): https://claude.ai/artifact/NHXM4ZCmtwAzijbCBjV856

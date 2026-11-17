@@ -48,7 +48,7 @@ export async function mangaUpdatesRequest(
     try {
       res = await fetch(`${BASE_URL}${path}`, {
         method: options.method ?? "GET",
-        headers: { "Content-Type": "application/json", "User-Agent": "IsfridVerse-metadata/1.0" },
+        headers: { "Content-Type": "application/json", "User-Agent": "Isfridia-metadata/1.0" },
         body: options.body === undefined ? undefined : JSON.stringify(options.body),
         signal: AbortSignal.timeout(TIMEOUT_MS),
         cache: "no-store",

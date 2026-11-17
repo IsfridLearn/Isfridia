@@ -11,7 +11,7 @@ import { getLatestChapters } from "@/lib/catalog/queries";
 
 export const metadata: Metadata = {
   title: "Latest updates",
-  description: "The newest chapters released on IsfridVerse.",
+  description: "The newest chapters released on Isfridia.",
 };
 
 export default function LatestPage({ searchParams }: PageProps<"/latest">) {

@@ -1,6 +1,6 @@
 @AGENTS.md
 
-# IsfridVerse
+# Isfridia
 
 Read `docs/PROGRESS.md` first (current phase, open questions), then
 `docs/ARCHITECTURE.md` and `docs/DESIGN.md` before changing anything.

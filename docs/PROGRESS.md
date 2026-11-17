@@ -3,7 +3,7 @@
 ## Phase 1: Architecture: DONE (2026-11-17)
 
 Approved architecture (`ARCHITECTURE.md`) and designs (`DESIGN.md`).
-Brand: IsfridVerse. Accent: glacier blue (no orange).
+Brand: Isfridia. Accent: glacier blue (no orange).
 
 ## Phase 2: Project setup: DONE (2026-11-17)
 
@@ -14,7 +14,7 @@ Brand: IsfridVerse. Accent: glacier blue (no orange).
 - [x] `npm run check:supabase` connection checker: prints OK
 - [x] git repository initialised (no commits yet)
 - [x] Project moved from `Manwha/isfridverse` up to `Manwha` (one folder)
-- [x] Supabase project created: IsfridVerse `hwkfkqzgryaplhatqxvf` (Tokyo,
+- [x] Supabase project created: "IsfridVerse" `hwkfkqzgryaplhatqxvf` (Tokyo,
       ap-northeast-1). The ISFRID project is a different app: never touch it.
 
 ## Phase 3: Database + auth: DONE except two owner checks (2026-11-17)
@@ -28,7 +28,7 @@ Built:
 - [x] Auth config pushed: redirect `http://localhost:3000/**`, min password 8
 
 Verified against the live project:
-- [x] 3 migrations applied (dry run showed target IsfridVerse first)
+- [x] 3 migrations applied (dry run showed target Isfridia first)
 - [x] `npm run test:rls`: 32/32 PASS; test data fully cleaned up
 - [x] `npm run test:auth`: 7/7 PASS (real login link → session cookie →
       /account shows user; fake link rejected; open redirect blocked;
@@ -273,15 +273,59 @@ Verified:
 
 Not built (not requested): account deletion, avatar uploads.
 
-## Paused here (2026-11-18): decisions waiting on the owner
+## Commit `d5a03aa` (2026-11-18): phases 1–9 saved in git (no remote yet)
 
-1. **"Discover" catalog?** Owner wants MangaUpdates manhwa on the site.
-   Explained: MangaUpdates has metadata only (no chapter pages). Offered: a
-   bulk-imported, credited, read-elsewhere catalog (facts only: titles,
-   authors, genres, year, status; no covers or descriptions; links to
-   MangaUpdates; ~20k manhwa fits the free DB). Owner hasn't decided.
-2. **Phase 10 needs:** free GitHub + Vercel accounts, and whether the site
-   will earn money (Vercel Hobby is non-commercial only).
-3. **Nothing is committed to git yet.** Offer a first commit when resuming.
+## MangaDex catalog: DONE (2026-11-18)
 
-## Next: Phase 10: Testing + deployment (or the Discover catalog first)
+What the owner asked for vs. what was built:
+- Asked: MangaDex titles, covers, chapters AND chapter images in the reader.
+- Built: titles, covers, metadata and OFFICIAL chapters only. MangaDex's own
+  rules don't forbid reading apps, but the chapter images MangaDex hosts are
+  fan scanlations; the publishers hold the rights, so they are never shown on
+  Isfrid. Measured on 800+ recent/popular English chapters: 0 were hosted by
+  official groups; official chapters are external links to the publisher.
+
+Built:
+- [x] Migration `mangadex_catalog`: comics `source`, `mangadex_id`,
+      `external_popularity` (MangaDex follows), `official_links`; chapters
+      `mangadex_id`, `external_url`, `group_name`, `translated_language`;
+      comic_cards exposes them; audit log skips the sync script's writes
+- [x] `src/lib/mangadex/map.ts` (+ tests): title choice, alt titles, plain
+      description, type from original language (ko/ja/zh), genres (genre tags
+      → genres, created if new; some themes → existing genres), official
+      links (engtl/raw/stores, https only), official chapters only (external
+      URL, available, numeric, one per number)
+- [x] `npm run mangadex:sync` (`scripts/mangadex-sync.mjs`): by follows or
+      `--order=latest`, `--pages`, `--offset`, `--verify`; English available,
+      safe/suggestive only; ≤ ~4 req/s with backoff; removed chapters deleted,
+      removed/adult titles unpublished (`--verify`); never overwrites slug,
+      featured or an admin's unpublish
+- [x] Covers through `/api/mangadex/cover/...` (MangaDex refuses hotlinks):
+      only current covers of published catalog titles, cached 1 year
+- [x] Comic page: official chapter rows link to the publisher; "Read or buy
+      officially"; MangaDex credit; honest empty state
+- [x] Reader: official chapters show a "Read on <publisher>" card (no
+      views/progress recorded for those)
+- [x] Popular/Trending: Isfrid views first, then MangaDex follows
+- [x] Footer credits MangaDex and MangaUpdates
+- [x] Demo comics removed (real titles only)
+
+MangaDex rules Isfrid must keep (API spec "Acceptable use policy"):
+- **No ads and no paid services** while the MangaDex API is used.
+- Credit MangaDex; credit groups for chapters (shown as the publisher name).
+- Server-side requests only; respect rate limits.
+
+Verified:
+- [x] 100 titles + 1,352 official chapters synced with 0 errors; covers load
+      as real images; cover route refuses non-catalog files (404)
+- [x] Site checks (now `npm run test:mangadex`): titles, covers, official
+      chapter links, reader card, honest empty state, type/genre filters,
+      search incl. alternative titles, popular, latest, pagination
+- [x] lint, typecheck, unit 36/36, rls 63/63, build; server log clean
+- Network note: direct Postgres connections from this PC timed out on
+  2026-11-18; migration applied over HTTPS (`supabase db query --file`) and
+  recorded in `supabase_migrations.schema_migrations`.
+
+## Next: Phase 10: Deployment (needs GitHub + Vercel accounts)
+Run the sync on a schedule after deploying (e.g. GitHub Actions daily:
+`--order=latest --pages=2`, weekly `--verify`).

@@ -1,4 +1,4 @@
-# IsfridVerse
+# Isfridia
 
 A dark-themed reading platform for original manhwa: browse, read, bookmark,
 and manage comics from an admin dashboard.
@@ -10,7 +10,7 @@ and manage comics from an admin dashboard.
 ## Requirements
 
 - Node.js 20.9 or newer (developed on Node 24)
-- The IsfridVerse Supabase project (`hwkfkqzgryaplhatqxvf`, org "IsfridVerse")
+- The site's Supabase project (`hwkfkqzgryaplhatqxvf`; still named "IsfridVerse" in the Supabase dashboard)
 
 ## Run it locally
 
@@ -39,11 +39,28 @@ Open http://localhost:3000. Edits to files under `src/` reload automatically.
 | `npm run test:library` | end-to-end check of bookmarks, history, profile, data export, admin roles (running site) |
 | `npm run test:unit` | unit tests (`src/**/*.test.ts`, Node's built-in runner) |
 | `npm run test:admin` | end-to-end check of the admin MangaUpdates tool against a running site |
-| `npm run demo:add` / `demo:remove` | add / delete the 12 sample comics (slugs start with `demo-`); remove before launch |
+| `npm run mangadex:sync` | sync the MangaDex catalog (titles, covers, official chapters); see options in `scripts/mangadex-sync.mjs` |
+| `npm run test:mangadex` | checks the MangaDex catalog on a running site (read-only) |
+| `npm run demo:add` / `demo:remove` | add / delete the 12 sample comics (slugs start with `demo-`); removed 2026-11-18 |
+
+## MangaDex catalog
+
+`npm run mangadex:sync` imports MangaDex titles (English available,
+safe/suggestive ratings), covers, and **official chapters only**: chapters
+MangaDex lists as external links to the publisher. Chapters hosted on
+MangaDex are fan scanlations and are never imported or shown.
+
+MangaDex's Acceptable use policy applies while this is used:
+- **No ads and no paid services** on the site.
+- Credit MangaDex (footer + comic pages) and the chapter's group.
+- Server-side requests only, within their rate limits (the script spaces them).
+
+Useful runs: `-- --pages=10` (1,000 most-followed titles), `-- --order=latest
+--pages=2` (recent updates), `-- --verify` (unpublish titles MangaDex removed).
 
 ## Supabase
 
-IsfridVerse uses **its own** project, `hwkfkqzgryaplhatqxvf`. The **ISFRID**
+Isfridia uses **its own** project, `hwkfkqzgryaplhatqxvf`. The **ISFRID**
 project on the same account belongs to a different app. Never point any
 command at it.
 
